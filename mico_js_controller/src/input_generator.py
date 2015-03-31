@@ -79,7 +79,7 @@ class InputGenerator:
 
 class JoyStickInputGen(InputGenerator):
     def __init__(self):
-        super(JoyStickInputGen, self).__init__('joy', Joy)
+        super(JoyStickInputGen, self).__init__('joystick', Joy)
         self.scale_pose = Pose()
         self.scale_twist = Twist()
         self.set_scale_values()
