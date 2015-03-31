@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -83,7 +84,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES mico_js_controller
- CATKIN_DEPENDS diagnostic_msgs rospy sensor_msgs std_msgs
+ CATKIN_DEPENDS diagnostic_msgs rospy sensor_msgs std_msgs tf
 #  DEPENDS system_lib
 )
 
