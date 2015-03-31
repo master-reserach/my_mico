@@ -16,9 +16,11 @@ DEBUG = True
 class InputGenerator:
     __metaclass__ = ABCMeta
 
+    # able to remap names
     input_pose_topicname = 'input_PoseStamped'
     input_twist_topicname = 'input_TwistStamped'
     current_pose_topicname = "current_PoseStamped"
+    inout_method_switching_servicename = 'input_method_switcher'
 
     def __init__(self, topic_name, topic_class):
         self.current_pose = Pose()
@@ -48,7 +50,7 @@ class InputGenerator:
             self.generate_pose(data)
 
     def run_input_method_switch_server(self):
-        service = rospy.Service('input_method_switcher', InputMethodSwitchService, self.handle_image_switcher)
+        rospy.Service(self.inout_method_switching_servicename, InputMethodSwitchService, self.input_method_switch_handler)
 
     @abstractmethod
     def generate_pose(self, data_from_device):
@@ -63,7 +65,6 @@ class InputGenerator:
         self.input_twist.angular.y = 0
         self.input_twist.angular.z = 0
 
-    @abstractmethod
     def input_method_switch_handler(self, req):
         if DEBUG: print('switch!')
 
@@ -85,7 +86,7 @@ class InputGenerator:
     def switch_to_pose_input(self, _header):
         self.pub_twist.unregister()
         self.pub_pose = rospy.Publisher(self.input_pose_topicname, PoseStamped, queue_size=10)
-        self.pub_pose.publish(TwistStamped(header=_header, pose=self.input_pose))
+        self.pub_pose.publish(PoseStamped(header=_header, pose=self.input_pose))
 
 
 class JoyStickInputGen(InputGenerator):
@@ -133,6 +134,7 @@ if __name__ == '__main__':
         js_input_gen.initialize_sub_current_pose()
         _header = Header()
 
+        js_input_gen.run_input_method_switch_server()
         while not rospy.is_shutdown():
             _header.stamp = rospy.Time.now()
             if js_input_gen.twist_mode_flag:
